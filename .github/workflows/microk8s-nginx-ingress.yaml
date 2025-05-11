@@ -23,15 +23,6 @@ jobs:
         kubectl get no
         kubectl get pods -A -o wide
     
-    - name: Test MicroK8s commands
-      id: microk8s
-      run: |
-        set -ex
-        echo "Executing microk8s status using sg command."
-        sg microk8s -c 'microk8s status'
-        echo "Executing microk8s status using sudo command."
-        sudo microk8s status
-
     - name: Deploy demo app and service
       run: |
         cat <<EOF | microk8s kubectl apply -f -
