@@ -22,6 +22,11 @@ jobs:
       run: |
         kubectl get no
         kubectl get pods -A -o wide
+
+    - name: Check User
+      run: |
+        id
+        sg microk8s -c 'microk8s status'
     
     - name: Deploy demo app and service
       run: |
