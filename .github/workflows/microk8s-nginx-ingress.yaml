@@ -26,7 +26,7 @@ jobs:
     - name: Check User
       run: |
         id
-        sg microk8s -c 'microk8s status'
+        sudo --user "$USER" --preserve-env --preserve-env=PATH -- env -- microk8s status
     
     - name: Deploy demo app and service
       run: |
