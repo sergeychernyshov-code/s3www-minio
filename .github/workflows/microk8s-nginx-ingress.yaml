@@ -1,0 +1,109 @@
+name: MicroK8s with NGINX Ingress + ngrok
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  microk8s-ingress:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install MicroK8s
+      run: |
+        sudo snap install microk8s --classic --channel=1.28/stable
+        sudo usermod -a -G microk8s $USER
+        sudo chown -f -R $USER ~/.kube
+        echo 'alias kubectl="microk8s kubectl"' >> ~/.bashrc
+        newgrp microk8s
+
+    - name: Wait for MicroK8s to be ready
+      run: |
+        microk8s status --wait-ready
+
+    - name: Enable addons
+      run: |
+        microk8s enable dns ingress
+
+    - name: Deploy demo app and service
+      run: |
+        cat <<EOF | microk8s kubectl apply -f -
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: demo-service
+        spec:
+          selector:
+            app: demo
+          ports:
+            - protocol: TCP
+              port: 80
+              targetPort: 8080
+        ---
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: demo
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              app: demo
+          template:
+            metadata:
+              labels:
+                app: demo
+            spec:
+              containers:
+              - name: demo
+                image: hashicorp/http-echo
+                args:
+                - "-text=Hello from MicroK8s!"
+                ports:
+                - containerPort: 8080
+        EOF
+
+    - name: Create Ingress Resource
+      run: |
+        cat <<EOF | microk8s kubectl apply -f -
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        metadata:
+          name: demo-ingress
+          annotations:
+            nginx.ingress.kubernetes.io/rewrite-target: /
+        spec:
+          rules:
+          - http:
+              paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: demo-service
+                    port:
+                      number: 80
+        EOF
+
+    - name: Install ngrok
+      run: |
+        curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+        echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+        sudo apt update && sudo apt install ngrok
+
+    - name: Start ngrok tunnel (HTTP on port 80)
+      env:
+        NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+      run: |
+        ngrok config add-authtoken $NGROK_AUTHTOKEN
+        nohup ngrok http 80 > ngrok.log &
+        sleep 10
+        curl http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
+
+    - name: Output tunnel URL
+      run: |
+        curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
+
