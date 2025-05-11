@@ -94,6 +94,14 @@ jobs:
         echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
         sudo apt update && sudo apt install ngrok
 
+    - name: Test MicroK8s Ingress
+      id: testingIngress
+      run: |
+        kubectl get no
+        kubectl get pods -A -o wide
+        kubectl get all
+        kubectl describe ingress
+
     - name: Start ngrok tunnel (HTTP on port 80)
       env:
         NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
