@@ -12,21 +12,32 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: Build Go binary
+      run: make build
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      run: make docker-push
+
     - name: A job to install MicroK8s
       uses: balchua/microk8s-actions@v0.4.3
       with:
         channel: '1.26/stable'
         addons: '["dns", "ingress", "rbac", "hostpath-storage", "registry"]'
-    - name: Test MicroK8s
-      id: myactions
-      run: |
-        kubectl get no
-        kubectl get pods -A -o wide
-
-    - name: Check User
-      run: |
-        id
-        sudo --user "$USER" --preserve-env --preserve-env=PATH -- env -- microk8s status
     
     - name: Deploy demo app and service
       run: |
@@ -109,14 +120,6 @@ jobs:
 
     - name: Install MinIO
       run: helm install my-minio minio-distributed/minio-distributed
-
-    - name: Test MicroK8s Ingress
-      id: testingIngress
-      run: |
-        kubectl get no
-        kubectl get pods -A -o wide
-        kubectl get all
-        kubectl describe ingress
 
     - name: Start ngrok tunnel (HTTP on port 80)
       env:
