@@ -22,7 +22,7 @@ spec:
             - name: S3_BUCKET
               value: "my-bucket"
             - name: MINIO_ENDPOINT
-              value: "my-minio-minio.default.svc.cluster.local:9000"
+              value: "s3-file-server-minio.default.svc.cluster.local:9000"
             - name: MINIO_ACCESS_KEY
               value: "minioadmin"
             - name: MINIO_SECRET_KEY
