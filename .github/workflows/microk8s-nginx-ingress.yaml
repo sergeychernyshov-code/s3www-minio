@@ -16,7 +16,13 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: '1.23'
-    
+
+    - name: Init Go module
+      run: |
+        cd src
+        go mod init github.com/sergeychernyshov-code/s3www-minio 
+        go mod tidy
+        
     - name: Build Go binary
       run: make -C src build
 
