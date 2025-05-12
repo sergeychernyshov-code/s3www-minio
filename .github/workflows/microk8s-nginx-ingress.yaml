@@ -141,7 +141,7 @@ jobs:
 #      run: helm install my-minio minio-distributed/minio-distributed
 #
     - name: Package Helm Chart
-      run: helm package ./charts --destination ./helm-packages
+      run: helm package ./charts/s3-file-server --destination ./helm-packages
 
     - name: Install/Upgrade Helm Chart
       run: |
