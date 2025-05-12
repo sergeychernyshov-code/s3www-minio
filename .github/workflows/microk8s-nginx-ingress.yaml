@@ -45,12 +45,12 @@ jobs:
 #      env:
 #        GITHUB_USER: ${{ github.repository_owner }}
 #
-#    - name: A job to install MicroK8s
-#      uses: balchua/microk8s-actions@v0.4.3
-#      with:
-#        channel: '1.26/stable'
-#        addons: '["dns", "ingress", "rbac", "hostpath-storage", "registry"]'
-#    
+    - name: A job to install MicroK8s
+      uses: balchua/microk8s-actions@v0.4.3
+      with:
+        channel: '1.26/stable'
+        addons: '["dns", "ingress", "rbac", "hostpath-storage", "registry"]'
+    
 #    - name: Deploy demo app and service
 #      run: |
 #        cat <<EOF | sudo --user "$USER" --preserve-env --preserve-env=PATH -- env -- microk8s kubectl apply -f -
