@@ -140,6 +140,9 @@ jobs:
 #    - name: Install MinIO
 #      run: helm install my-minio minio-distributed/minio-distributed
 #
+    - name: Update Helm dependencies
+      run: helm dependency update ./charts/s3-file-server
+    
     - name: Package Helm Chart
       run: helm package ./charts/s3-file-server --destination ./helm-packages
 
