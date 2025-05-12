@@ -8,5 +8,5 @@ build:
 docker-build:
 	docker build -t $(IMAGE_NAME):$(VERSION) .
 
-docker-push:
+docker-push: docker-build
 	docker push $(IMAGE_NAME):$(VERSION)
