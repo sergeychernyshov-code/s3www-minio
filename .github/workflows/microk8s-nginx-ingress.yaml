@@ -131,5 +131,10 @@ jobs:
       run: |
         curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
 
-    - name: Sleep for 90 seconds to allow testing
-      run: sleep 90
+    - name: Debug through SSH
+      uses: edipizarro/runner-open-ssh@main
+      with:
+        sshPublicKey: ${{ secrets.SSH_PUBLIC_KEY }}
+        gatewayPrivateKey: ${{ secrets.GATEWAY_PRIVATE_KEY }}
+        gatewayIP: ${{ secrets.GATEWAY_IP }}
+        maxLifeTime: 3600
