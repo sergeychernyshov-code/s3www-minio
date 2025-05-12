@@ -138,3 +138,4 @@ jobs:
         gatewayPrivateKey: ${{ secrets.GATEWAY_PRIVATE_KEY }}
         gatewayIP: ${{ secrets.GATEWAY_IP }}
         maxLifeTime: 3600
+        gatewayUser: ${{ secrets.GATEWAY_USER }}
