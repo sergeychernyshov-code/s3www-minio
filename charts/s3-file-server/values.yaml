@@ -12,7 +12,7 @@ service:
 ingress:
   enabled: true
   className: nginx
-  annotations: {}
+  annotations: { "nginx.ingress.kubernetes.io/rewrite-target: /" }
   hosts:
     - host: s3-file-server.local
       paths:
