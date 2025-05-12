@@ -6,7 +6,7 @@ build:
 	go build -o bin/$(APP_NAME) .
 
 docker-build:
-	docker build -t $(IMAGE_NAME):$(VERSION) .
+	docker build --no-cache -t $(IMAGE_NAME):$(VERSION) .
 
 docker-push: docker-build
 	docker push $(IMAGE_NAME):$(VERSION)
