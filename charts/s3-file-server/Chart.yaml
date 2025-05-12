@@ -1,0 +1,11 @@
+apiVersion: v2
+name: s3-file-server
+description: A Helm chart for s3 file server with MinIO dependency
+type: application
+version: 0.1.0
+appVersion: "1.0"
+
+dependencies:
+  - name: minio-distributed
+    version: "latest"
+    repository: "https://sergeychernyshov-code.github.io/minio-distributed-chart"
