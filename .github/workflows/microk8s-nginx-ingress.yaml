@@ -124,6 +124,13 @@ jobs:
       with:
         version: v3.13.0  # Adjust as needed
 
+    - name: Run chart-releaser
+      uses: helm/chart-releaser-action@v1.6.0
+      with:
+        charts_dir: charts
+      env:
+        CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
     - name: Add MinIO distributed Helm repo
       run: helm repo add minio-distributed https://sergeychernyshov-code.github.io/minio-distributed-chart
 
@@ -132,6 +139,13 @@ jobs:
 
     - name: Install MinIO
       run: helm install my-minio minio-distributed/minio-distributed
+
+    - name: Package Helm Chart
+      run: helm package ./charts --destination ./helm-packages
+
+    - name: Install/Upgrade Helm Chart
+      run: |
+        helm upgrade --install my-release ./helm-packages/*.tgz
 
     - name: Start ngrok tunnel (HTTP on port 80)
       env:
