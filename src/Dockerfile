@@ -3,6 +3,9 @@ FROM golang:1.23.9 AS builder
 WORKDIR /app
 COPY . .
 
+# Disable CGO to make static binary
+ENV CGO_ENABLED=0
+
 RUN go build -o s3-file-server .
 
 FROM debian:bullseye-slim
