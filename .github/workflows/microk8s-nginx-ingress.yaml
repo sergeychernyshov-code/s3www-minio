@@ -16,109 +16,109 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23'
-
-    - name: Init Go module
-      run: |
-        cd src
-        go mod init github.com/sergeychernyshov-code/s3www-minio 
-        go mod tidy
-        
-    - name: Build Go binary
-      run: make -C src build
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Build and push Docker image
-      run: make -C src docker-push
-      env:
-        GITHUB_USER: ${{ github.repository_owner }}
-
-    - name: A job to install MicroK8s
-      uses: balchua/microk8s-actions@v0.4.3
-      with:
-        channel: '1.26/stable'
-        addons: '["dns", "ingress", "rbac", "hostpath-storage", "registry"]'
-    
-    - name: Deploy demo app and service
-      run: |
-        cat <<EOF | sudo --user "$USER" --preserve-env --preserve-env=PATH -- env -- microk8s kubectl apply -f -
-        apiVersion: v1
-        kind: Service
-        metadata:
-          name: demo-service
-        spec:
-          selector:
-            app: demo
-          ports:
-            - protocol: TCP
-              port: 80
-              targetPort: 8080
-        ---
-        apiVersion: apps/v1
-        kind: Deployment
-        metadata:
-          name: demo
-        spec:
-          replicas: 1
-          selector:
-            matchLabels:
-              app: demo
-          template:
-            metadata:
-              labels:
-                app: demo
-            spec:
-              containers:
-              - name: demo
-                image: hashicorp/http-echo
-                args:
-                - "-text=Hello from MicroK8s!"
-                - "-listen=:8080"
-                ports:
-                - containerPort: 8080
-        EOF
-
-    - name: Create Ingress Resource
-      run: |
-        cat <<EOF | sudo --user "$USER" --preserve-env --preserve-env=PATH -- env -- microk8s kubectl apply -f -
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        metadata:
-          name: demo-ingress
-          annotations:
-            nginx.ingress.kubernetes.io/rewrite-target: /
-        spec:
-          ingressClassName: nginx
-          rules:
-          - http:
-              paths:
-              - path: /
-                pathType: Prefix
-                backend:
-                  service:
-                    name: demo-service
-                    port:
-                      number: 80
-        EOF
-
-    - name: Install ngrok
-      run: |
-        curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
-        echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
-        sudo apt update && sudo apt install ngrok
-
+#    - name: Set up Go
+#      uses: actions/setup-go@v5
+#      with:
+#        go-version: '1.23'
+#
+#    - name: Init Go module
+#      run: |
+#        cd src
+#        go mod init github.com/sergeychernyshov-code/s3www-minio 
+#        go mod tidy
+#        
+#    - name: Build Go binary
+#      run: make -C src build
+#
+#    - name: Set up Docker Buildx
+#      uses: docker/setup-buildx-action@v2
+#
+#    - name: Log in to GitHub Container Registry
+#      uses: docker/login-action@v2
+#      with:
+#        registry: ghcr.io
+#        username: ${{ github.repository_owner }}
+#        password: ${{ secrets.GITHUB_TOKEN }}
+#
+#    - name: Build and push Docker image
+#      run: make -C src docker-push
+#      env:
+#        GITHUB_USER: ${{ github.repository_owner }}
+#
+#    - name: A job to install MicroK8s
+#      uses: balchua/microk8s-actions@v0.4.3
+#      with:
+#        channel: '1.26/stable'
+#        addons: '["dns", "ingress", "rbac", "hostpath-storage", "registry"]'
+#    
+#    - name: Deploy demo app and service
+#      run: |
+#        cat <<EOF | sudo --user "$USER" --preserve-env --preserve-env=PATH -- env -- microk8s kubectl apply -f -
+#        apiVersion: v1
+#        kind: Service
+#        metadata:
+#          name: demo-service
+#        spec:
+#          selector:
+#            app: demo
+#          ports:
+#            - protocol: TCP
+#              port: 80
+#              targetPort: 8080
+#        ---
+#        apiVersion: apps/v1
+#        kind: Deployment
+#        metadata:
+#          name: demo
+#        spec:
+#          replicas: 1
+#          selector:
+#            matchLabels:
+#              app: demo
+#          template:
+#            metadata:
+#              labels:
+#                app: demo
+#            spec:
+#              containers:
+#              - name: demo
+#                image: hashicorp/http-echo
+#                args:
+#                - "-text=Hello from MicroK8s!"
+#                - "-listen=:8080"
+#                ports:
+#                - containerPort: 8080
+#        EOF
+#
+#    - name: Create Ingress Resource
+#      run: |
+#        cat <<EOF | sudo --user "$USER" --preserve-env --preserve-env=PATH -- env -- microk8s kubectl apply -f -
+#        apiVersion: networking.k8s.io/v1
+#        kind: Ingress
+#        metadata:
+#          name: demo-ingress
+#          annotations:
+#            nginx.ingress.kubernetes.io/rewrite-target: /
+#        spec:
+#          ingressClassName: nginx
+#          rules:
+#          - http:
+#              paths:
+#              - path: /
+#                pathType: Prefix
+#                backend:
+#                  service:
+#                    name: demo-service
+#                    port:
+#                      number: 80
+#        EOF
+#
+#    - name: Install ngrok
+#      run: |
+#        curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+#        echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+#        sudo apt update && sudo apt install ngrok
+#
     - name: Set up Helm
       uses: azure/setup-helm@v3
       with:
@@ -147,24 +147,24 @@ jobs:
       run: |
         helm upgrade --install my-release ./helm-packages/*.tgz
 
-    - name: Start ngrok tunnel (HTTP on port 80)
-      env:
-        NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
-      run: |
-        ngrok config add-authtoken $NGROK_AUTHTOKEN
-        nohup ngrok http 80 > ngrok.log &
-        sleep 10
-        curl http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
-
-    - name: Output tunnel URL
-      run: |
-        curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
-
-    - name: Debug through SSH
-      uses: edipizarro/runner-open-ssh@main
-      with:
-        sshPublicKey: ${{ secrets.SSH_PUBLIC_KEY }}
-        gatewayPrivateKey: ${{ secrets.GATEWAY_PRIVATE_KEY }}
-        gatewayIP: ${{ secrets.GATEWAY_IP }}
-        maxLifeTime: 3600
-        gatewayUser: ${{ secrets.GATEWAY_USER }}
+#    - name: Start ngrok tunnel (HTTP on port 80)
+#      env:
+#        NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+#      run: |
+#        ngrok config add-authtoken $NGROK_AUTHTOKEN
+#        nohup ngrok http 80 > ngrok.log &
+#        sleep 10
+#        curl http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
+#
+#    - name: Output tunnel URL
+#      run: |
+#        curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
+#
+#    - name: Debug through SSH
+#      uses: edipizarro/runner-open-ssh@main
+#      with:
+#        sshPublicKey: ${{ secrets.SSH_PUBLIC_KEY }}
+#        gatewayPrivateKey: ${{ secrets.GATEWAY_PRIVATE_KEY }}
+#        gatewayIP: ${{ secrets.GATEWAY_IP }}
+#        maxLifeTime: 3600
+#        gatewayUser: ${{ secrets.GATEWAY_USER }}
