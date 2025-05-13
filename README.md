@@ -48,15 +48,9 @@ A GitHub Actions step uses Terraform to install this Helm chart.
 
 ### 🔗 CI/CD Ingress Access (For Demo purposes)
 
-Ingress access is being done via ngrok proxy that connects to the exposed nginx ingress endpoint in GitHub actions runner, you can see this endpoint during actions run under:  `Output tunnel URL` step, for example:
+Ingress access is being done via ngrok proxy that connects to the exposed nginx ingress endpoint in GitHub actions runner, you can see this endpoint in the last step of the GitHub Actions pipeline:
 
-```
-https://05ac-20-57-79-82.ngrok-free.app
-```
-
-Please follow this link in your browser and click "Visit Site", this needs to be done due to limitations of ngrok free tier version.
-
-Then test with:
+Example:
 
 ```sh
 curl -v -o giphy.gif https://05ac-20-57-79-82.ngrok-free.app/giphy.gif
