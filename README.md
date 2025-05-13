@@ -10,7 +10,7 @@
 - CI/CD pipeline with GitHub Actions
 - Terraform-based Helm deployments
 
-## Architecture
+## 🏗️ Architecture
 
 ```
 [User] --> [Ingress] --> [s3-file-server Pod] --> [MinIO Service] --> [MinIO Distributed Storage]
@@ -18,16 +18,16 @@
                                   --> [Prometheus Metrics Exporter]
 ```
 
-## Deployment
+## 📦 Deployment
 
-### Prerequisites
+### ✅ Prerequisites
 
 - Kubernetes cluster (MicroK8s recommended for local dev)
 - Helm 3+
 - Terraform CLI (for GitHub Actions deployment)
 - GitHub Packages (for image hosting)
 
-### Build & Push Docker Image
+### 🛠️ Build & Push Docker Image
 
 ```sh
 make -C src docker-push
@@ -35,7 +35,7 @@ make -C src docker-push
 
 This will build the binary, package it into a Docker image, and push it to GitHub Packages.
 
-### Helm Chart Installation
+### ☸️ Helm Chart Installation
 
 ```sh
 helm dependency update ./charts/s3-file-server
@@ -46,7 +46,7 @@ helm install s3-file-server ./charts/s3-file-server
 
 A GitHub Actions step uses Terraform to install this Helm chart.
 
-### CI/CD Ingress Access (For Demo purposes)
+### 🔗 CI/CD Ingress Access (For Demo purposes)
 
 Ingress access is being done via ngrok proxy that connects to the exposed nginx ingress endpoint in GitHub actions runner, you can see this endpoint during actions run under:  `Output tunnel URL` step, for example:
 
@@ -62,9 +62,9 @@ Then test with:
 curl -v -o giphy.gif https://05ac-20-57-79-82.ngrok-free.app/giphy.gif
 ```
 
-## Configuration
+## ⚙️ Configuration
 
-Values in `values.yaml`:
+Values in `values.yaml` exported as environmental variables :
 
 ```
 env:
@@ -78,7 +78,7 @@ env:
     value: "minioadmin"
 ```
 
-## Observability
+## 📈 Observability
 
 Metrics exported on `/metrics` endpoint include:
 
