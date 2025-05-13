@@ -93,6 +93,8 @@ Metrics exported on `/metrics` endpoint include:
 ## TODO
 
 - add tests for the Go file server
+- utilise Resource section in the deployment.yaml (populated via values.yaml), start with basic settings and slowly acknowledge resource requests and limits for this application depending on load
+- put in place affinity and anti-affinity rules if the service requires specific nodes for it's workloads
 
 ## Authors
 
