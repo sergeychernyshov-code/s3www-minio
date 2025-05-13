@@ -8,17 +8,17 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    {{- range .Values.ingress.hosts }}
     - http:
         paths:
+          {{- range .Values.ingress.hosts }}
           {{- range .paths }}
           - path: {{ .path }}
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ include "s3-file-server.fullname" . }}
+                name: {{ include "s3-file-server.fullname" $ }}
                 port:
                   number: 80
           {{- end }}
-    {{- end }}
+          {{- end }}
 {{- end }}
