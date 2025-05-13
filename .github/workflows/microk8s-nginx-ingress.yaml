@@ -9,7 +9,7 @@ permissions:
   packages: write
 
 jobs:
-  microk8s-ingress:
+  CI-CD:
     runs-on: ubuntu-24.04 
 
     steps:
@@ -84,30 +84,6 @@ jobs:
           -var="minio_access_key=${{ secrets.MINIO_ACCESS_KEY }}" \
           -var="minio_secret_key=${{ secrets.MINIO_SECRET_KEY }}"
 
-#    - name: Set up Helm
-#      uses: azure/setup-helm@v3
-#      with:
-#        version: v3.13.0  # Adjust as needed
-#
-#    - name: Update Helm dependencies
-#      run: helm dependency update ./charts/s3-file-server
-#    
-#    - name: Package Helm Chart
-#      run: helm package ./charts/s3-file-server --destination ./helm-packages
-#
-#    - name: Install/Upgrade Helm Chart
-#      run: |
-#        helm upgrade --install s3-file-server ./helm-packages/*.tgz \
-#          -f ./charts/s3-file-server/values.yaml \
-#          --set env[0].name=S3_BUCKET \
-#          --set env[0].value=${{ secrets.S3_BUCKET }} \
-#          --set env[1].name=MINIO_ENDPOINT \
-#          --set env[1].value=${{ secrets.MINIO_ENDPOINT }} \
-#          --set env[2].name=MINIO_ACCESS_KEY \
-#          --set env[2].value=${{ secrets.MINIO_ACCESS_KEY }} \
-#          --set env[3].name=MINIO_SECRET_KEY \
-#          --set env[3].value=${{ secrets.MINIO_SECRET_KEY }}
-    
     - name: Start ngrok tunnel (HTTP on port 80)
       env:
         NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
@@ -121,11 +97,11 @@ jobs:
       run: |
         curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
 
-    - name: Debug through SSH
-      uses: edipizarro/runner-open-ssh@main
-      with:
-        sshPublicKey: ${{ secrets.SSH_PUBLIC_KEY }}
-        gatewayPrivateKey: ${{ secrets.GATEWAY_PRIVATE_KEY }}
-        gatewayIP: ${{ secrets.GATEWAY_IP }}
-        maxLifeTime: 3600
-        gatewayUser: ${{ secrets.GATEWAY_USER }}
+#    - name: Debug through SSH
+#      uses: edipizarro/runner-open-ssh@main
+#      with:
+#        sshPublicKey: ${{ secrets.SSH_PUBLIC_KEY }}
+#        gatewayPrivateKey: ${{ secrets.GATEWAY_PRIVATE_KEY }}
+#        gatewayIP: ${{ secrets.GATEWAY_IP }}
+#        maxLifeTime: 3600
+#        gatewayUser: ${{ secrets.GATEWAY_USER }}
