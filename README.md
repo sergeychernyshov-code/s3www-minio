@@ -64,7 +64,7 @@ curl -v -o giphy.gif https://05ac-20-57-79-82.ngrok-free.app/giphy.gif
 
 ## ⚙️ Configuration
 
-Values in `values.yaml` exported as environmental variables :
+Values in `values.yaml` exported as environmental variables from GitHub secrets, so please make sure these are present in the repositories Secret configuration section under Settings -> Actions -> Secrets (default values are given as an example):
 
 ```
 env:
