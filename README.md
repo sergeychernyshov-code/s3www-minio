@@ -87,14 +87,13 @@ Metrics exported on `/metrics` endpoint include:
 
 ## Operational Considerations
 
-- Ensure secrets are mounted securely.
-- Tune retry logic in MinIO client as needed.
+- Ensure secrets are configured correctly in repository Settings.
 - Scale `s3-file-server` based on expected load.
 
 ## Authors
 
-Maintained by [Your Name].
+Maintained by Sergey Chernyshov
 
 ## License
 
-MIT
+GPL-3.0 license
