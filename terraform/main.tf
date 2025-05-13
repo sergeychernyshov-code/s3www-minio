@@ -5,9 +5,10 @@ provider "helm" {
 }
 
 resource "helm_release" "s3_file_server" {
-  name       = "s3-file-server"
-  chart      = "../charts/s3-file-server"
-  namespace  = "default"
+  name              = "s3-file-server"
+  chart             = "../charts/s3-file-server"
+  namespace         = "default"
+  dependency_update = true
 
   set {
     name  = "env[0].name"
