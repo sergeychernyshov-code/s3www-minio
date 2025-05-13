@@ -87,9 +87,9 @@ Metrics exported on `/metrics` endpoint include:
 
 ## TODO
 
-- add tests for the Go file server
-- utilise Resource section in the deployment.yaml (populated via values.yaml), start with basic settings and slowly acknowledge resource requests and limits for this application depending on load
-- put in place affinity and anti-affinity rules if the service requires specific nodes for it's workloads
+- Add tests for the Go file server
+- Utilise Resource section in the deployment.yaml (populated via values.yaml), start with basic settings and slowly acknowledge resource requests and limits for this application depending on load
+- Put in place affinity and anti-affinity rules if the service requires specific nodes for it's workloads
 - Split GitHub Actions pipeline in two separate workflows for CI and CD, leaving out MicroK8S installation step and Terraform apply in CI workflow ( CI workflow should be triggered on creation of Pull Request and CD wokrflow on Pull Request Merge )
 
 ## Authors
