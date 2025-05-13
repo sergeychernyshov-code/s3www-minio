@@ -95,7 +95,7 @@ jobs:
 
     - name: Output curl command and URL and sleep for 10 minutes, leaving application serving the file
       run: |
-        echo curl -v -o giphy.gif "http://$( curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url' )/giphy.gif" && sleep 600
+        echo curl -v -o giphy.gif "$( curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url' )/giphy.gif" && sleep 600
 
 #    - name: enables ssh and leaves app running for testing 
 #      uses: edipizarro/runner-open-ssh@main
