@@ -16,7 +16,6 @@ ingress:
     nginx.ingress.kubernetes.io/rewrite-target: '/'
   }
   hosts:
-    - host: s3-file-server.local
       paths:
         - path: /
           pathType: Prefix
