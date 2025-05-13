@@ -148,8 +148,17 @@ jobs:
 
     - name: Install/Upgrade Helm Chart
       run: |
-        helm upgrade --install s3-file-server ./helm-packages/*.tgz
-
+        helm upgrade --install s3-file-server ./helm-packages/*.tgz \
+          -f ./charts/s3-file-server/values.yaml \
+          --set env[0].name=S3_BUCKET \
+          --set env[0].value=${{ secrets.S3_BUCKET }} \
+          --set env[1].name=MINIO_ENDPOINT \
+          --set env[1].value=${{ secrets.MINIO_ENDPOINT }} \
+          --set env[2].name=MINIO_ACCESS_KEY \
+          --set env[2].value=${{ secrets.MINIO_ACCESS_KEY }} \
+          --set env[3].name=MINIO_SECRET_KEY \
+          --set env[3].value=${{ secrets.MINIO_SECRET_KEY }}
+    
     - name: Start ngrok tunnel (HTTP on port 80)
       env:
         NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
