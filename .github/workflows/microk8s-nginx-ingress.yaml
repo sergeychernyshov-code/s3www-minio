@@ -93,15 +93,15 @@ jobs:
         sleep 10
         curl http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
 
-    - name: Output tunnel URL
+    - name: Output tunnel URL and sleep for 10 minutes, leaving application serving the file
       run: |
-        curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
+        curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url' && sleep 600
 
-    - name: enables ssh and leaves app running for testing 
-      uses: edipizarro/runner-open-ssh@main
-      with:
-        sshPublicKey: ${{ secrets.SSH_PUBLIC_KEY }}
-        gatewayPrivateKey: ${{ secrets.GATEWAY_PRIVATE_KEY }}
-        gatewayIP: ${{ secrets.GATEWAY_IP }}
-        maxLifeTime: 600
-        gatewayUser: ${{ secrets.GATEWAY_USER }}
+#    - name: enables ssh and leaves app running for testing 
+#      uses: edipizarro/runner-open-ssh@main
+#      with:
+#        sshPublicKey: ${{ secrets.SSH_PUBLIC_KEY }}
+#        gatewayPrivateKey: ${{ secrets.GATEWAY_PRIVATE_KEY }}
+#        gatewayIP: ${{ secrets.GATEWAY_IP }}
+#        maxLifeTime: 600
+#        gatewayUser: ${{ secrets.GATEWAY_USER }}
