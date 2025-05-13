@@ -1,227 +1,91 @@
-s3www-minio System Documentation
+# s3www-minio
 
-Overview
+## Overview
 
-This microservice provides HTTP access to files stored in an S3-compatible object store (MinIO). It is built with:
+`s3www-minio` is a lightweight, production-ready HTTP file server built in Go that serves files from a MinIO (S3-compatible) object storage backend. It includes built-in Prometheus metrics for observability and is designed to be deployed to Kubernetes using a Helm chart. Optional components include:
 
-Go (uses minio-go client)
+- Integration with distributed MinIO deployment
+- Ingress routing with nginx
+- CI/CD pipeline with GitHub Actions
+- Terraform-based Helm deployments
 
-MinIO (distributed via Helm dependency)
+## Architecture
 
-Kubernetes (via Helm chart)
+```
+[User] --> [Ingress] --> [s3-file-server Pod] --> [MinIO Service] --> [MinIO Distributed Storage]
+                                  |
+                                  --> [Prometheus Metrics Exporter]
+```
 
-NGINX Ingress (optionally using ngrok)
+## Deployment
 
-Prometheus Metrics (file downloads and error counts)
+### Prerequisites
 
-GitHub Actions for CI/CD
+- Kubernetes cluster (MicroK8s recommended for local dev)
+- Helm 3+
+- Terraform CLI (for GitHub Actions deployment)
+- GitHub Packages (for image hosting)
 
-Terraform for infrastructure and Helm chart management
+### Build & Push Docker Image
 
-Architecture
+```sh
+make -C src docker-push
+```
 
-         Ingress (NGINX/ngrok)
-               |
-         s3-file-server (Go)
-               |
-         MinIO Server (S3-compatible)
+This will build the binary, package it into a Docker image, and push it to GitHub Packages.
 
-Configuration
+### Helm Chart Installation
 
-Environment Variables
+```sh
+helm dependency update ./charts/s3-file-server
+helm install s3-file-server ./charts/s3-file-server
+```
 
-Variable
+### Terraform Installation (Optional)
 
-Description
+A GitHub Actions step uses Terraform to install this Helm chart.
 
-Required
+### Ingress Access
 
-Example
+The ingress rule assumes the service is exposed as `s3-file-server.local`. For local development, add the following to `/etc/hosts`:
 
-MINIO_ENDPOINT
-
-MinIO service address
-
-✅
-
-minio.default.svc:9000
-
-MINIO_BUCKET
-
-Target bucket name
-
-✅
-
-my-bucket
-
-MINIO_ACCESS_KEY
-
-MinIO access key
-
-✅
-
-admin
-
-MINIO_SECRET_KEY
-
-MinIO secret key
-
-✅
-
-password123
-
-PORT
-
-Port the HTTP server binds to
-
-❌
-
-8080
-
-Deployment
-
-1. Install MicroK8s (for local testing)
-
-sudo snap install microk8s --classic
-microk8s enable dns storage ingress helm3 prometheus
-
-2. Build and Push Docker Image
-
-cd src
-make build
-make docker-build
-make docker-push
-
-3. Helm Chart Deployment
-
-Helm chart includes:
-
-Service
-
-Ingress
-
-Deployment
-
-Metrics service
-
-Dependency: minio-distributed
-
-cd helm/s3-file-server
-helm dependency update
-helm install s3-file-server . -n default
-
-Or deploy using Terraform (see below).
-
-Kubernetes Access
-
-Access via Ingress
-
-Ensure your /etc/hosts has:
-
+```
 127.0.0.1 s3-file-server.local
+```
 
-Access:
+Then test with:
 
-curl -v -o giphy.gif http://s3-file-server.local/giphy.gif
+```sh
+curl -v -o myfile.txt http://s3-file-server.local/myfile.txt
+```
 
-If using ngrok:
+## Configuration
 
-ngrok http 80
+Values in `values.yaml`:
 
-Update your Ingress or test with ngrok URL.
+- `minio.accessKey`
+- `minio.secretKey`
+- `server.bucket`
+- `server.region`
+- `server.endpoint`
 
-GitHub Actions CI/CD
+## Observability
 
-CI/CD builds, pushes, and deploys via Terraform.
+Metrics exported on `/metrics` endpoint include:
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-go@v5
-        with:
-          go-version: 1.23.x
+- `s3_file_downloads_total`
+- `s3_file_download_errors_total`
 
-      - run: make -C src build
-      - run: make -C src docker-build
-      - run: make -C src docker-push
-      - run: terraform init && terraform apply -auto-approve
+## Operational Considerations
 
-Prometheus Metrics
+- Ensure secrets are mounted securely.
+- Tune retry logic in MinIO client as needed.
+- Scale `s3-file-server` based on expected load.
 
-Service exposes metrics at /metrics.
+## Authors
 
-s3_file_downloads_total
+Maintained by [Your Name].
 
-s3_file_errors_total
+## License
 
-Example alert:
-
-- alert: HighFileErrorRate
-  expr: rate(s3_file_errors_total[5m]) > 5
-  for: 2m
-  labels:
-    severity: warning
-  annotations:
-    summary: High error rate accessing files
-
-Helm Chart Layout
-
-helm/s3-file-server/
-├── charts/
-├── templates/
-│   ├── deployment.yaml
-│   ├── ingress.yaml
-│   ├── service.yaml
-├── Chart.yaml
-├── values.yaml
-└── requirements.yaml
-
-Security Considerations
-
-Secrets managed via K8s secrets or Terraform
-
-MinIO is internal unless explicitly exposed
-
-Use HTTPS + Cert-Manager in production
-
-File access can be secured with signed URLs
-
-Terraform Usage
-
-provider "helm" {
-  kubernetes {
-    config_path = "~/.kube/config"
-  }
-}
-
-resource "helm_release" "s3-file-server" {
-  name       = "s3-file-server"
-  chart      = "./helm/s3-file-server"
-  namespace  = "default"
-}
-
-Operational Tips
-
-kubectl logs deploy/s3-file-server to check logs
-
-kubectl port-forward svc/s3-file-server 8080:80
-
-Final Validation Checklist
-
-
-
-Contributors
-
-DevOps: CI/CD, Terraform
-
-Backend: Go service, metrics
-
-QA: Helm testing, Ingress validation
-
-Versioning
-
-Follows Semantic Versioning. Maintains CHANGELOG.md.
-
-For questions or contributions, open an issue or PR on GitHub.
-
+MIT
