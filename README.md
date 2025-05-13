@@ -30,6 +30,7 @@
 ### 🛠️ Build & Push Docker Image
 
 ```sh
+make -C src build
 make -C src docker-push
 ```
 
