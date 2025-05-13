@@ -90,6 +90,10 @@ Metrics exported on `/metrics` endpoint include:
 - Ensure secrets are configured correctly in repository Settings.
 - Scale `s3-file-server` based on expected load.
 
+## TODO
+
+- add tests for the Go file server
+
 ## Authors
 
 Maintained by Sergey Chernyshov
