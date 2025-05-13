@@ -19,11 +19,7 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            - name: S3_BUCKET
-              value: "my-bucket"
-            - name: MINIO_ENDPOINT
-              value: "s3-file-server-minio.default.svc.cluster.local:9000"
-            - name: MINIO_ACCESS_KEY
-              value: "minioadmin"
-            - name: MINIO_SECRET_KEY
-              value: "minioadmin"
+          {{- range .Values.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+          {{- end }}

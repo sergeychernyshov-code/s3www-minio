@@ -1,8 +1,9 @@
+
 # s3www-minio
 
 ## Overview
 
-`s3www-minio` is a lightweight, production-ready HTTP file server built in Go that serves files from a MinIO (S3-compatible) object storage backend. It includes built-in Prometheus metrics for observability and is designed to be deployed to Kubernetes using a Helm chart. Optional components include:
+`s3www-minio` is a lightweight, HTTP file server built in Go that serves files from a MinIO (S3-compatible) object storage backend. It includes built-in Prometheus metrics for observability and is designed to be deployed to Kubernetes using a Helm chart. Optional components include:
 
 - Integration with distributed MinIO deployment
 - Ingress routing with nginx
@@ -45,29 +46,37 @@ helm install s3-file-server ./charts/s3-file-server
 
 A GitHub Actions step uses Terraform to install this Helm chart.
 
-### Ingress Access
+### CI/CD Ingress Access (For Demo purposes)
 
-The ingress rule assumes the service is exposed as `s3-file-server.local`. For local development, add the following to `/etc/hosts`:
+Ingress access is being done via ngrok proxy that connects to the exposed nginx ingress endpoint in GitHub actions runner, you can see this endpoint during actions run under:  `Output tunnel URL` step, for example:
 
 ```
-127.0.0.1 s3-file-server.local
+https://05ac-20-57-79-82.ngrok-free.app
 ```
+
+Please follow this link in your browser and click "Visit Site", this needs to be done due to limitations of ngrok free tier version.
 
 Then test with:
 
 ```sh
-curl -v -o myfile.txt http://s3-file-server.local/myfile.txt
+curl -v -o giphy.gif https://05ac-20-57-79-82.ngrok-free.app/giphy.gif
 ```
 
 ## Configuration
 
 Values in `values.yaml`:
 
-- `minio.accessKey`
-- `minio.secretKey`
-- `server.bucket`
-- `server.region`
-- `server.endpoint`
+```
+env:
+  - name: S3_BUCKET
+    value: "my-bucket"
+  - name: MINIO_ENDPOINT
+    value: "s3-file-server-minio.default.svc.cluster.local:9000"
+  - name: MINIO_ACCESS_KEY
+    value: "minioadmin"
+  - name: MINIO_SECRET_KEY
+    value: "minioadmin"
+```
 
 ## Observability
 
