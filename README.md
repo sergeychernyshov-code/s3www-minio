@@ -5,7 +5,7 @@
 
 `s3www-minio` is a lightweight, HTTP file server built in Go that serves files from a MinIO (S3-compatible) object storage backend. It includes built-in Prometheus metrics for observability and is designed to be deployed to Kubernetes using a Helm chart. Optional components include:
 
-- Integration with distributed MinIO deployment
+- Integration with distributed MinIO deployment (<https://github.com/sergeychernyshov-code/minio-distributed-chart>)
 - Ingress routing with nginx
 - CI/CD pipeline with GitHub Actions
 - Terraform-based Helm deployments
