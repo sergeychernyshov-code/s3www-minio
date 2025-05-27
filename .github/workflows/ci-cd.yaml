@@ -69,21 +69,29 @@ jobs:
     - name: Terraform Plan
       working-directory: terraform
       run: |
+        VERSION="0.1.$(git rev-list --count HEAD)-$(git rev-parse --short HEAD)"
+        IMAGE_REPO="ghcr.io/${{ github.repository_owner }}/s3-file-server"
+
         terraform plan \
           -var="s3_bucket=${{ secrets.S3_BUCKET }}" \
           -var="minio_endpoint=${{ secrets.MINIO_ENDPOINT }}" \
           -var="minio_access_key=${{ secrets.MINIO_ACCESS_KEY }}" \
           -var="minio_secret_key=${{ secrets.MINIO_SECRET_KEY }}"
 
-    - name: Terraform Apply
+    - name: Terraform Apply with Helm set values
       working-directory: terraform
       run: |
+        VERSION="0.1.$(git rev-list --count HEAD)-$(git rev-parse --short HEAD)"
+        IMAGE_REPO="ghcr.io/${{ github.repository_owner }}/s3-file-server"
+    
         terraform apply -auto-approve \
           -var="s3_bucket=${{ secrets.S3_BUCKET }}" \
           -var="minio_endpoint=${{ secrets.MINIO_ENDPOINT }}" \
           -var="minio_access_key=${{ secrets.MINIO_ACCESS_KEY }}" \
-          -var="minio_secret_key=${{ secrets.MINIO_SECRET_KEY }}"
-
+          -var="minio_secret_key=${{ secrets.MINIO_SECRET_KEY }}" \
+          -var="image_repository=${IMAGE_REPO}" \
+          -var="image_tag=${VERSION}"
+    
     - name: Start ngrok tunnel (HTTP on port 80)
       env:
         NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
