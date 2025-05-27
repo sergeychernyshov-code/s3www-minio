@@ -1,5 +1,5 @@
 APP_NAME = s3-file-server
-VERSION = 0.1.0
+VERSION := 0.1.$(shell git rev-list --count HEAD)-$(shell git rev-parse --short HEAD)
 IMAGE_NAME = ghcr.io/$(GITHUB_USER)/$(APP_NAME)
 
 build:
