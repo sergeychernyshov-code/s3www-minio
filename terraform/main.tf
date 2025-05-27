@@ -21,14 +21,6 @@ locals {
     {
       name  = "MINIO_SECRET_KEY"
       value = var.minio_secret_key
-    },
-    {
-      name  = "IMAGE_REPO"
-      value = var.image_repository
-    },
-    {
-      name  = "VERSION"
-      value = var.image_tag
     }
   ]
 }
@@ -54,6 +46,17 @@ resource "helm_release" "s3_file_server" {
       value = set.value.value
     }
   }
+
+  set {
+    name  = "image.repository"
+    value = var.image_repository
+  }
+
+  set {
+    name  = "image.tag"
+    value = var.image_tag
+  }
+
 }
 
 variable "s3_bucket" {}
