@@ -77,6 +77,8 @@ jobs:
           -var="minio_endpoint=${{ secrets.MINIO_ENDPOINT }}" \
           -var="minio_access_key=${{ secrets.MINIO_ACCESS_KEY }}" \
           -var="minio_secret_key=${{ secrets.MINIO_SECRET_KEY }}"
+          -var="image_repository=${IMAGE_REPO}" \
+          -var="image_tag=${VERSION}"
 
     - name: Terraform Apply with Helm set values
       working-directory: terraform
