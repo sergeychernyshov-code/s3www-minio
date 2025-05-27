@@ -90,9 +90,19 @@ jobs:
       run: |
         ngrok config add-authtoken $NGROK_AUTHTOKEN
         nohup ngrok http 80 > ngrok.log &
-        sleep 10
-        curl http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
-
+        
+        # Wait for ngrok to be ready
+        for i in {1..30}; do
+          if curl --silent http://127.0.0.1:4040/api/tunnels | jq -e '.tunnels[0].public_url' > /dev/null; then
+            break
+          fi
+          echo "Waiting for ngrok to start..."
+          sleep 1
+        done
+    
+        # Output the public URL
+        curl --silent http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
+    
     - name: Output curl command and URL and sleep for 10 minutes, leaving application serving the file
       run: |
         echo curl -v -o giphy.gif "$( curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url' )/giphy.gif" && sleep 600
