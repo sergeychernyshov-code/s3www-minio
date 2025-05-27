@@ -21,6 +21,14 @@ locals {
     {
       name  = "MINIO_SECRET_KEY"
       value = var.minio_secret_key
+    },
+    {
+      name  = "IMAGE_REPO"
+      value = var.image_repository
+    },
+    {
+      name  = "VERSION"
+      value = var.image_tag
     }
   ]
 }
@@ -52,3 +60,5 @@ variable "s3_bucket" {}
 variable "minio_endpoint" {}
 variable "minio_access_key" {}
 variable "minio_secret_key" {}
+variable "image_repository" {}
+variable "image_tag" {}
