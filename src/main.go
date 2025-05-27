@@ -93,7 +93,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, key))
 	w.Header().Set("Content-Type", stat.ContentType)
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", stat.Size))
-	io.Copy(w, object)
+	_, err = io.Copy(w, object)
+	if nil != err {
+		return
+	}
 }
 
 func main() {
